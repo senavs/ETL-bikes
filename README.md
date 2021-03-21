@@ -107,4 +107,105 @@ python3 create.py
 python3 etl.py
 ```
 
+**NOTA**: Caso queria executar os script com jupyter notebook e visualizar os outputs, acesse o diretório `ETL-Bikes/notebooks`, abra o jupyter notebook e execute os arquivos `create.ipynb` e `etl.ipynb`.
+```sh
+jupyter notebook
+```
+
 ### Análises
+Scripts SQL e seus outputs das análises solicitadas no objetivo do desafio.
+
+  - 01 Escreva uma query que retorna a quantidade de linhas na tabela Sales.SalesOrderDetail pelo campo SalesOrderID, desde que tenham pelo menos três linhas de detalhes.
+  ```sql
+  SELECT  SALES_ORDER_ID,
+          COUNT(SALES_ORDER_ID) AS QUANTIDADE_LINHAS
+  FROM SALES_ORDER_DETAIL
+  GROUP BY SALES_ORDER_ID
+  HAVING QUANTIDADE_LINHAS
+  ORDER BY QUANTIDADE_LINHAS
+  ```
+  ![análise 01](https://github.com/senavs/ETL-bikes/blob/master/analysis/01/01.png)
+  
+  - 02 Escreva uma query que ligue as tabelas Sales.SalesOrderDetail, Sales.SpecialOfferProduct e Production.Product e retorne os 3 produtos (Name) mais vendidos (pela soma de OrderQty), agrupados pelo número de dias para manufatura (DaysToManufacture).
+  ```sql
+  SELECT  T3.NAME,
+          T3.DAYS_TO_MANUFACTURE,
+          SUM(T1.ORDER_QTY) VENDAS
+  FROM SALES_ORDER_DETAIL AS T1
+  LEFT JOIN SPECIAL_OFFER_PRODUCT AS T2 ON T1.SPECIAL_OFFER_ID = T2.SPECIAL_OFFER_ID
+  LEFT JOIN PRODUCT AS T3 ON T2.PRODUCT_ID = T3.PRODUCT_ID
+  GROUP BY T3.NAME, T3.DAYS_TO_MANUFACTURE
+  ORDER BY VENDAS
+  LIMIT 3
+  ```
+  ![análise 02](https://github.com/senavs/ETL-bikes/blob/master/analysis/02/02.png)
+  
+  - 03 Escreva uma query ligando as tabelas Person.Person, Sales.Customer e Sales.SalesOrderHeader de forma a obter uma lista de nomes de clientes e uma contagem de pedidos efetuados.
+  ```sql
+  SELECT  T1.PERSON_ID,
+          CONCAT(T1.FIRST_NAME, ' ', T1.LAST_NAME) AS NAME,
+          COUNT(T1.PERSON_ID) AS PEDIDOS
+  FROM PERSON AS T1
+  LEFT JOIN CUSTOMER AS T2 ON T1.PERSON_ID = T2.PERSON_ID
+  LEFT JOIN SALES_ORDER_HEADER AS T3 ON T2.CUSTOMER_ID = T3.CUSTOMER_ID
+  WHERE T2.PERSON_ID IS NOT NULL
+  GROUP BY T1.PERSON_ID
+  ORDER BY PEDIDOS DESC
+  ```
+  ![análise 03](https://github.com/senavs/ETL-bikes/blob/master/analysis/03/03.png)
+  
+  - 04 Escreva uma query usando as tabelas Sales.SalesOrderHeader, Sales.SalesOrderDetail e Production.Product, de forma a obter a soma total de produtos (OrderQty) por ProductID e OrderDate.
+  ```sql
+  SELECT  T4.PRODUCT_ID,
+          T1.ORDER_DATE,
+          SUM(T2.ORDER_QTY) AS PEDIDOS
+  FROM SALES_ORDER_HEADER AS T1
+  LEFT JOIN SALES_ORDER_DETAIL AS T2 ON T1.SALES_ORDER_ID = T2.SALES_ORDER_ID
+  LEFT JOIN SPECIAL_OFFER_PRODUCT AS T3 ON T2.SPECIAL_OFFER_ID = T3.SPECIAL_OFFER_ID
+  LEFT JOIN PRODUCT AS T4 ON T3.PRODUCT_ID = T4.PRODUCT_ID
+  GROUP BY T4.PRODUCT_ID, T1.ORDER_DATE
+  ```
+  ![análise 04](https://github.com/senavs/ETL-bikes/blob/master/analysis/04/04.png)
+  
+  - 05 Escreva uma query usando as tabelas Sales.SalesOrderHeader, Sales.SalesOrderDetail e Production.Product, de forma a obter a soma total de produtos (OrderQty) por ProductID e OrderDate.
+  ```sql
+  SELECT  SALES_ORDER_ID,
+          MONTHNAME(ORDER_DATE) AS 'MONTH',
+          YEAR(ORDER_DATE) AS 'YEAR',
+          TOTAL_DUE
+  FROM SALES_ORDER_HEADER
+  WHERE DATE_FORMAT(ORDER_DATE, '%%m/%%Y') = '09/2011' AND tOTAL_DUE > 1000
+  ORDER BY TOTAL_DUE DESC
+  ```
+  ![análise 05](https://github.com/senavs/ETL-bikes/blob/master/analysis/05/05.png)
+
+**NOTA**: Caso queria executar os script com jupyter notebook e visualizar os outputs, acesse o diretório `ETL-Bikes/notebooks`, abra o jupyter notebook e execute o arquivo `analysis.ipynb`.
+```sh
+jupyter notebook
+```
+
+## Arquivos e Diretórios
+
+Análises:
+  - [Scripts e imagens](https://github.com/senavs/ETL-bikes/tree/master/analysis)
+
+Database
+  - [DDL](https://github.com/senavs/ETL-bikes/blob/master/database/DDL/DDL.sql)
+  - [DML](https://github.com/senavs/ETL-bikes/tree/master/database/DML)
+  - [Modelo Físico](https://github.com/senavs/ETL-bikes/blob/master/database/MER/physical.png)
+  - [Modelo Conceitual](https://github.com/senavs/ETL-bikes/blob/master/database/conceptual/conceptual.png)
+
+Notebooks
+  - [Create](https://github.com/senavs/ETL-bikes/blob/master/notebooks/create.ipynb)
+  - [ETL](https://github.com/senavs/ETL-bikes/blob/master/notebooks/etl.ipynb)
+  - [Análises](https://github.com/senavs/ETL-bikes/blob/master/notebooks/analysis.ipynb)
+
+Kubernetes
+  - [Configmap](https://github.com/senavs/ETL-bikes/tree/master/kubernetes/configmap.yaml)
+  - [Secret](https://github.com/senavs/ETL-bikes/tree/master/kubernetes/secret.yaml)
+  - [Deployment](https://github.com/senavs/ETL-bikes/tree/master/kubernetes/deployment.yaml)
+  - [Service](https://github.com/senavs/ETL-bikes/tree/master/kubernetes/service.yaml)
+
+Python
+  - [Create](https://github.com/senavs/ETL-bikes/blob/master/scripts/create.py)
+  - [ETL](https://github.com/senavs/ETL-bikes/blob/master/scripts/etl.py)

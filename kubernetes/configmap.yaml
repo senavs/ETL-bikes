@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: database-configmap
+  namespace: rox
+data:
+  MYSQL_DATABASE: BIKES

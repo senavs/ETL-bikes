@@ -121,7 +121,7 @@ Scripts SQL e seus outputs das análises solicitadas no objetivo do desafio.
           COUNT(SALES_ORDER_ID) AS QUANTIDADE_LINHAS
   FROM SALES_ORDER_DETAIL
   GROUP BY SALES_ORDER_ID
-  HAVING QUANTIDADE_LINHAS
+  HAVING QUANTIDADE_LINHAS >= 3
   ORDER BY QUANTIDADE_LINHAS
   ```
   ![análise 01](https://github.com/senavs/ETL-bikes/blob/master/analysis/01/01.png)
